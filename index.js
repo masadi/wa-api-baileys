@@ -37,7 +37,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 const server = require("http").createServer(app);
-const io = require("socket.io")(server);
+//const io = require("socket.io")(server);
+const { Server } = require("socket.io");
+const io = new Server(server);
 const port = process.env.PORT || 8080;
 const qrcode = require("qrcode");
 
