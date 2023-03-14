@@ -182,7 +182,11 @@ io.on("connection", async (socket) => {
        updateQR("qr");   
     }
 });
-
+io.on("opening", async (socket) => {
+    soket = socket;
+    //let isConnected = isConnected()
+    soket?.emit("log", soket);
+})
 
 
 const updateQR = (data) => {
