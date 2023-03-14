@@ -170,6 +170,7 @@ async function getUser() {
 io.on("connection", async (socket) => {
     soket = socket;
     //let isConnected = isConnected()
+    soket?.emit("log", 'connection start');
     const user = await getUser()
     console.log(user);
     soket?.emit("log", user);
