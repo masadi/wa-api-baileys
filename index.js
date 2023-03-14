@@ -172,9 +172,12 @@ io.on("connection", async (socket) => {
     //let isConnected = isConnected()
     const user = await getUser()
     console.log(user);
+    soket?.emit("log", user);
     if (user) {
+        soket?.emit("log", 'connected');
         updateQR("connected");
     } else {
+        soket?.emit("log", 'qr');
        updateQR("qr");   
     }
 });
