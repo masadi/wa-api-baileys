@@ -187,7 +187,21 @@ io.on("opening", async (socket) => {
     //let isConnected = isConnected()
     soket?.emit("log", soket);
 })
-
+io.on('connect', async (socket) => {
+    soket = socket;
+    //let isConnected = isConnected()
+    soket?.emit("log", 'connection start');
+    const user = await getUser()
+    console.log(user);
+    soket?.emit("log", user);
+    if (user) {
+        soket?.emit("log", 'connected');
+        updateQR("connected");
+    } else {
+        soket?.emit("log", 'qr');
+       updateQR("qr");   
+    }
+});
 
 const updateQR = (data) => {
     switch (data) {
