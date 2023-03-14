@@ -170,13 +170,13 @@ async function getUser() {
 io.on("connection", async (socket) => {
     soket = socket;
     //let isConnected = isConnected()
-    //const user = await getUser()
-    //console.log(user);
-    //if (user) {
-        //updateQR("connected");
-    //} else {
-       // updateQR("qr");   
-    //}
+    const user = await getUser()
+    console.log(user);
+    if (user) {
+        updateQR("connected");
+    } else {
+       updateQR("qr");   
+    }
 });
 
 
