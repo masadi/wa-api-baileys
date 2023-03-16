@@ -1,1 +1,0 @@
-wa-api-baileys v.5.0.0
