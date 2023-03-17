@@ -90,3 +90,7 @@ The API documentation is available online [here](https://documenter.getpostman.c
 ## Notice
 
 This project is intended for learning purpose only, don't use it for spamming or any activities that's prohibited by **WhatsApp**
+
+## Running Foreverjs
+
+forever start dist/index.js

@@ -27,6 +27,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-validator": "^6.14.2",
+    "forever-monitor": "^3.0.3",
     "link-preview-js": "^3.0.0",
     "pino": "^8.7.0",
     "qrcode": "^1.5.1",
