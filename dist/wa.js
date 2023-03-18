@@ -186,7 +186,7 @@ async function createSession(options) {
         const getData = async () => {
             console.log(process.env.WEBHOOK_URL);
             const response = await axios.post(
-                WEBHOOK_URL,
+                process.env.WEBHOOK_URL,
                 {data: message}
             )
             return response
