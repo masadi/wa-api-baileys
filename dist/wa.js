@@ -182,21 +182,23 @@ async function createSession(options) {
         const jid = message.key.remoteJid
         if (message.key.fromMe || m.type !== 'notify')
             return;
-        //console.log(m);
-        const getData = async () => {
-            console.log(process.env.WEBHOOK_URL);
+        const getWebhook = await shared_1.prisma.webhooks.findFirst({
+            where: { sessionId: sessionId },
+        });
+        const webhook_url = (getWebhook) ? getWebhook.url : process.env.WEBHOOK_URL
+        if(webhook_url){
             const response = await axios.post(
-                process.env.WEBHOOK_URL,
+                webhook_url,
                 {data: message}
-            )
-            return response
-        };
-        getData().then(async (res) => {
+            ).then(async (res) => {
+                await socket.readMessages([message.key]);
+                if(res.data.data){
+                    await socket.sendMessage(jid, res.data.data, { quoted: message })
+                }
+            })
+        } else {
             await socket.readMessages([message.key]);
-            if(res.data.data){
-                await socket.sendMessage(jid, res.data.data, { quoted: message })
-            }
-        })
+        }
     });
     if (readIncomingMessages) {
         socket.ev.on('messages.upsert', async (m) => {
