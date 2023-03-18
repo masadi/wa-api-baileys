@@ -167,6 +167,4 @@ model Webhooks {
   sessionId 	String @db.VarChar(128)
   created_at    DateTime @default(now())
   updated_at	DateTime @default(now())
-
-  @@index([sessionId])
 }
