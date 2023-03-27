@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 var __rest = (this && this.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -17,17 +17,26 @@ const list = (req, res) => {
     res.status(200).json((0, wa_1.listSessions)());
 };
 exports.list = list;
-const find = (req, res) => res.status(200).json({ message: 'Session found' });
+//const find = (req, res) => res.status(200).json({ message: 'Session found' });
+const find = (req, res) => {
+    const session = (0, wa_1.getSession)(req.params.sessionId);
+    res.status(200).json((0, wa_1.getSessionStatus)(session))
+};
 exports.find = find;
 const status = (req, res) => {
     const session = (0, wa_1.getSession)(req.params.sessionId);
-    res.status(200).json({ status: (0, wa_1.getSessionStatus)(session) });
+    res.status(200).json((0, wa_1.getSessionStatus)(session));
 };
 exports.status = status;
 const add = async (req, res) => {
     const _a = req.body, { sessionId, readIncomingMessages } = _a, socketConfig = __rest(_a, ["sessionId", "readIncomingMessages"]);
     if ((0, wa_1.sessionExists)(sessionId))
-        return res.status(400).json({ error: 'Session already exists' });
+        return res.status(200).json({
+            success: false,
+            status: 'Session already exists',
+            qr: null,
+        });
+        //return res.status(400).json({ error: 'Session already exists' });
     (0, wa_1.createSession)({ sessionId, res, readIncomingMessages, socketConfig });
 };
 exports.add = add;
@@ -48,6 +57,12 @@ const addSSE = async (req, res) => {
 exports.addSSE = addSSE;
 const del = async (req, res) => {
     await (0, wa_1.deleteSession)(req.params.sessionId);
-    res.status(200).json({ message: 'Session deleted' });
+    res.status(200).json(
+        { 
+            success: true,
+            status: 'Session deleted',
+            user: null,
+        }
+    );
 };
 exports.del = del;

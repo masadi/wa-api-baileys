@@ -36,9 +36,25 @@ const send = async (req, res) => {
         const session = (0, wa_1.getSession)(req.params.sessionId);
         const exists = await (0, wa_1.jidExists)(session, jid, type);
         if (!exists)
-            return res.status(400).json({ error: 'JID does not exists' });
+            return res.status(200).json({
+                sessionId: req.params.sessionId,
+                result: {
+                    key: {
+                        remoteJid: jid,
+                    },
+                    message: {
+                        extendedTextMessage:{
+                            text: message.text,
+                        },
+                    },
+                    status: null 
+                }
+            });
         const result = await session.sendMessage(jid, message, options);
-        res.status(200).json(result);
+        res.status(200).json({
+            sessionId: req.params.sessionId,
+            result: result
+        });
     }
     catch (e) {
         const message = 'An error occured during message send';

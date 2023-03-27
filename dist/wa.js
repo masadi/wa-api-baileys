@@ -118,7 +118,12 @@ async function createSession(options) {
             if (res && !res.headersSent) {
                 try {
                     const qr = await (0, qrcode_1.toDataURL)(connectionState.qr);
-                    res.status(200).json({ qr });
+                    //res.status(200).json({ qr });
+                    res.status(200).json({
+                        success: true,
+                        status: 'Please scan QR',
+                        qr,
+                    })
                     return;
                 }
                 catch (e) {
@@ -188,26 +193,51 @@ async function createSession(options) {
         const webhook_url = (getWebhook) ? getWebhook.url : process.env.WEBHOOK_URL
         if(webhook_url){
             const response = await axios.post(
-                webhook_url,
+                webhook_url+'whatsapp-web',
                 {data: message}
             ).then(async (res) => {
-                await socket.readMessages([message.key]);
                 if(res.data.data){
                     await socket.sendMessage(jid, res.data.data, { quoted: message })
                 }
             })
-        } else {
-            await socket.readMessages([message.key]);
         }
+        /* else {
+            await socket.readMessages([message.key]);
+        }*/
     });
     if (readIncomingMessages) {
         socket.ev.on('messages.upsert', async (m) => {
-            console.log(JSON.stringfy(m, null, 2))
             const message = m.messages[0];
             if (message.key.fromMe || m.type !== 'notify')
                 return;
             await (0, utils_1.delay)(1000);
             await socket.readMessages([message.key]);
+            const new_contatc = {
+                id: message.key.remoteJid,
+                sessionId,
+            };
+            const getGroup = await socket.groupMetadata(message.key.remoteJid);
+            if(getGroup){
+                const getWebhook = await shared_1.prisma.webhooks.findFirst({
+                    where: { sessionId: sessionId },
+                });
+                const webhook_url = (getWebhook) ? getWebhook.url : process.env.WEBHOOK_URL
+                if(webhook_url){
+                    const response = await axios.post(
+                        webhook_url+'save-group',
+                        {
+                            sessionId:sessionId,
+                            data: getGroup
+                        }
+                    ).then(async (res) => {
+                        await shared_1.prisma.contact.upsert({
+                            create: new_contatc,
+                            update: {},
+                            where: { sessionId_id: { id: message.key.remoteJid, sessionId } },
+                        });
+                    })
+                }
+            }
         });
     }
     // Debug events
@@ -228,9 +258,15 @@ async function createSession(options) {
 exports.createSession = createSession;
 function getSessionStatus(session) {
     const state = ['CONNECTING', 'CONNECTED', 'DISCONNECTING', 'DISCONNECTED'];
-    let status = state[session.ws.readyState];
-    status = session.user ? 'AUTHENTICATED' : status;
-    return status;
+    //let status = state[session.ws.readyState];
+    //status = session.user ? 'AUTHENTICATED' : status;
+    return {
+        success: true,
+        status: state[session.ws.readyState],
+        user: session.user,
+        state: session.ws.readyState,
+    }
+    //status;
 }
 exports.getSessionStatus = getSessionStatus;
 function listSessions() {
@@ -263,6 +299,7 @@ async function jidExists(session, jid, type = 'number') {
         return !!groupMeta.id;
     }
     catch (e) {
+        console.log(e);
         return Promise.reject(e);
     }
 }
