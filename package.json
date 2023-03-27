@@ -1,6 +1,6 @@
 {
   "name": "baileys-api",
-  "description": "Simple RESTful WhatsApp API",
+  "description": "Simple RESTful WhatsApp API update",
   "version": "1.0.0-beta.0",
   "private": true,
   "main": "dist/index.js",
